@@ -3,19 +3,28 @@
 > Documento de continuidade permanente. Qualquer agente ou sessao que retomar este projeto deve ler este arquivo primeiro.
 
 ## Metadados do Projeto
-* **Nome**: ALM Engine (Action Engine do Invokta)
-* **Objetivo**: Motor universal, desacoplado e tipado para gestao e governanca do ciclo de vida de chamados (Fases 0 a 6), gates de qualidade, proveniencia criptografica e orquestracao multi-agentes com revisao externa.
-* **Framework Base**: Invokta (Action Engine pattern) + TypeScript + Zod + Vitest.
-* **Auxiliares**: Token-Saver (economia de contexto e formatacao TOON) + Claude Code CLI (revisao adversarial externa).
+* **Nome**: ALM Engine (Action Engine com padrao Invokta)
+* **Repositorio**: https://github.com/alexandrelenin/alm-engine
+* **Objetivo**: Motor universal, desacoplado e tipado para gestao e governanca do ciclo de vida de chamados (Fases 0 a 6), gates de qualidade, proveniencia criptografica SHA-256 e orquestracao multi-agentes com revisao externa.
+* **Stack**: TypeScript + Zod + Vitest + MCP (Model Context Protocol).
+* **Parceiro de Eficiencia**: Token-Saver (clamping de Go/Java e formatacao TOON).
+* **Parceiro de Revisao**: Claude Code CLI (claude -p headless mode).
 
 ## Estado Atual da Execucao
-* **Fase**: Fase 1 — Inicializacao do Projeto & Estrutura Core.
-* **Ultima acao**: Criacao do diretorio do projeto, definicao do plano de implementacao e contratos conceituais.
-* **Proximo passo**: Inicializar package.json, instalar dependencias do Invokta/Zod/Vitest e modelar os schemas Zod de dominio (src/domain/schema.ts).
+* **Fase**: Marco 1 e Marco 2 Concluidos com Sucesso.
+* **Ultima acao**: 
+  - Criacao da arquitetura de dominio (	ypes.ts, schema.ts, parser.ts).
+  - Implementacao das capabilities phase-gate, 	dd-gate, provenance e external-review.
+  - Implementacao dos transports cli.ts e mcp.ts.
+  - 100% dos testes passando no Vitest (6/6 tests).
+  - Repositorio remoto criado e sincronizado no GitHub (lexandrelenin/alm-engine).
+* **Proximo passo**: 
+  1. Integrar conectores de dominio do SIOP (CCM Jazz OSLC via ccm-connector e banco Oracle via db-connector com formatacao TOON).
+  2. Adicionar o script de instalacao MCP (
+pm run mcp:install) para registrar o lm-engine no Antigravity, Claude Code e Codex.
 * **Bloqueios**: Nenhum.
 
-## Decisoes de Design Tomadas
-1. **Desacoplamento de Dominio**: O ALM Engine NAO contera regras hardcoded do SIOP ou de orcamento publico. Toda regra de negocio especifica entra via conectores injetaveis.
-2. **Substituicao dos Scripts Bash**: Scripts como lm-gate.sh e 	dd-gate.sh serao convertidos em capabilities tipadas em TypeScript com validacao Zod e saidas estruturadas (JSON e texto human-readable).
-3. **Revisao Adversarial**: A capability lm.review.external invocara claude -p (Claude Code CLI headless) em modo read-only para triar diffs contra regras proibitivas sem interferencia de vies do agente executor.
-4. **Governança de Proveniencia**: Toda aprovacao de pre-deploy calcula e confere o SHA-256 dos artefatos e assina o recibo em .telemetria/flight.jsonl.
+## Decisoes Arquiteturais Estabelecidas
+1. **Desacoplamento Rigoroso**: Regras de negocio de sistemas especificos (SIOP, emendas, orcamento) ficam em conectores opcionais; o motor cuida estritamente de fases, gates, sensores e auditoria.
+2. **Revisao Adversarial**: A capability ExternalReviewCapability dispara revisao headless via claude -p, sem vies de confirmacao do agente executor.
+3. **Imutabilidade de Proveniencia**: Toda aprovacao de pre-deploy calcula o SHA-256 do checklist e grava no .telemetria/flight.jsonl.
