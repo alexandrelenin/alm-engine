@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { AlmEngine, ProcessMarkdownParser, PhaseGateCapability, ProvenanceCapability } from '../src/index.js';
+import { AlmEngine, ProcessMarkdownParser, PhaseGateCapability, ProvenanceCapability, CcmConnector, DatabaseConnector } from '../src/index.js';
 
 describe('ALM Engine Core Suite', () => {
   let tmpDir: string;
@@ -153,5 +153,27 @@ describe('ALM Engine Core Suite', () => {
     const verifyTampered = engine.verifyProvenance(flightLog, '26153', checklistPath);
     expect(verifyTampered.valid).toBe(false);
     expect(verifyTampered.status).toBe('HASH_DIVERGE');
+  });
+
+  it('deve converter chamados do CCM para formato TOON reduzindo contexto', () => {
+    const items = [
+      { id: '26153', type: 'Defeito', status: 'Em Investigacao', severity: 'Alta', title: 'Erro de Saldo' },
+      { id: '26154', type: 'Melhoria', status: 'Novo', severity: 'Media', title: 'Adicionar filtro de ano' },
+    ];
+    const toon = CcmConnector.toToonFormat(items);
+    expect(toon).toContain('TOON[2]');
+    expect(toon).toContain('id|type|status|severity|title');
+    expect(toon).toContain('26153|Defeito|Em Investigacao|Alta|Erro de Saldo');
+  });
+
+  it('deve converter snapshots de tabelas SQL para formato TOON eliminando repeticao', () => {
+    const rows = [
+      { COD_ACAO: '20TP', EXERCICIO: 2026, VL_DOTACAO: 1500000 },
+      { COD_ACAO: '00S9', EXERCICIO: 2026, VL_DOTACAO: 850000 },
+    ];
+    const toon = DatabaseConnector.tableToToon('SIOP.TB_ACAO', rows);
+    expect(toon).toContain('TOON TABLE SIOP.TB_ACAO [2 rows]');
+    expect(toon).toContain('COD_ACAO|EXERCICIO|VL_DOTACAO');
+    expect(toon).toContain('20TP|2026|1500000');
   });
 });
