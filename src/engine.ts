@@ -4,7 +4,17 @@ import { TddGateCapability } from './capabilities/tdd-gate.js';
 import { ProvenanceCapability } from './capabilities/provenance.js';
 import { ExternalReviewCapability, ExternalReviewOptions } from './capabilities/external-review.js';
 import { KnowledgePromotionCapability } from './capabilities/promote-knowledge.js';
-import { PromoteKnowledgeOptions } from './domain/types.js';
+import { SiopPermissionCapability } from './capabilities/siop-permission.js';
+import { SiopHomologCapability } from './capabilities/siop-homolog.js';
+import {
+  PromoteKnowledgeOptions,
+  SiopPermissionOptions,
+  SiopPermissionResult,
+  SiopHomologRunOptions,
+  SiopHomologRunResult,
+  SiopK8sLogsOptions,
+  SiopK8sLogsResult,
+} from './domain/types.js';
 
 export class AlmEngine {
   public async checkPhaseGate(options: PhaseGateOptions): Promise<GateResult> {
@@ -35,4 +45,17 @@ export class AlmEngine {
   public promoteKnowledge(options: PromoteKnowledgeOptions) {
     return KnowledgePromotionCapability.promote(options);
   }
+
+  public manageSiopPermission(options: SiopPermissionOptions): SiopPermissionResult {
+    return SiopPermissionCapability.execute(options);
+  }
+
+  public runSiopHomolog(options: SiopHomologRunOptions): SiopHomologRunResult {
+    return SiopHomologCapability.runScript(options);
+  }
+
+  public captureSiopK8sLogs(options: SiopK8sLogsOptions): SiopK8sLogsResult {
+    return SiopHomologCapability.captureK8sLogs(options);
+  }
 }
+

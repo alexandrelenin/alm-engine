@@ -108,6 +108,49 @@ export class AlmEngineMcpServer {
                 },
                 required: ['almId', 'checklistPath']
               }
+            },
+            {
+              name: 'alm_siop_permission',
+              description: 'Manages SIOP test environment permissions, GOD MODE, password reset (Argon2id/MD5), and user profile assignment.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  action: { type: 'string', enum: ['god-mode', 'reset-password', 'grant-profile', 'grant-functionality', 'list-permissions'] },
+                  environment: { type: 'string', description: 'Target test environment (e.g. siop02, diario)' },
+                  cpf: { type: 'string', description: 'User CPF (11 digits)' },
+                  password: { type: 'string', description: 'New password for reset-password action' },
+                  profile: { type: 'string', description: 'Profile name for grant-profile action' },
+                  functionality: { type: 'string', description: 'Functionality name from catalog for grant-functionality action' }
+                },
+                required: ['action', 'environment', 'cpf']
+              }
+            },
+            {
+              name: 'alm_siop_homolog_run',
+              description: 'Executes SIOP test script with Playwright (zero-token AI browser driver) and collects screenshots, console and network HAR evidence.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  scriptDir: { type: 'string', description: 'Directory containing roteiro.md and test config' },
+                  environment: { type: 'string', description: 'Optional target environment' },
+                  headless: { type: 'boolean', description: 'Run headless (default: true)' }
+                },
+                required: ['scriptDir']
+              }
+            },
+            {
+              name: 'alm_siop_k8s_logs',
+              description: 'Captures K8s pod logs for relevant microservices and methods during test window, resolving pod builds.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  environment: { type: 'string', description: 'Target test environment' },
+                  descriptors: { type: 'string', description: 'Descriptor string (e.g. servico1:*;servico2:metodo1)' },
+                  envPath: { type: 'string', description: 'Path to .env containing credentials' },
+                  evidenceDir: { type: 'string', description: 'Target directory containing resultado.json and receiving logs' }
+                },
+                required: ['environment', 'descriptors', 'envPath', 'evidenceDir']
+              }
             }
           ]
         }
@@ -164,6 +207,55 @@ export class AlmEngineMcpServer {
 
       if (toolName === 'alm_provenance_verify') {
         const result = this.engine.verifyProvenance(args.flightLogPath, String(args.almId), String(args.checklistPath));
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          }
+        };
+      }
+
+      if (toolName === 'alm_siop_permission') {
+        const result = this.engine.manageSiopPermission({
+          action: args.action,
+          environment: String(args.environment),
+          cpf: String(args.cpf),
+          password: args.password ? String(args.password) : undefined,
+          profile: args.profile ? String(args.profile) : undefined,
+          functionality: args.functionality ? String(args.functionality) : undefined,
+        });
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          }
+        };
+      }
+
+      if (toolName === 'alm_siop_homolog_run') {
+        const result = this.engine.runSiopHomolog({
+          scriptDir: String(args.scriptDir),
+          environment: args.environment ? String(args.environment) : undefined,
+          headless: args.headless !== false,
+        });
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          }
+        };
+      }
+
+      if (toolName === 'alm_siop_k8s_logs') {
+        const result = this.engine.captureSiopK8sLogs({
+          environment: String(args.environment),
+          descriptors: String(args.descriptors),
+          envPath: String(args.envPath),
+          evidenceDir: String(args.evidenceDir),
+        });
         return {
           jsonrpc: '2.0',
           id,

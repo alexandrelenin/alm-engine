@@ -173,6 +173,64 @@ Uso:
         process.exit(0);
       }
 
+      case 'siop-permission': {
+        const action = args[1] as any;
+        const environment = args[2];
+        const cpf = args[3];
+
+        if (!action || !environment || !cpf) {
+          console.error('Uso: alm-engine siop-permission <god-mode|reset-password|grant-profile|grant-functionality|list-permissions> <ambiente> <cpf> [--senha <senha>] [--perfil <perfil>] [--func <func>]');
+          process.exit(2);
+        }
+
+        const getArg = (flag: string): string | undefined => {
+          const idx = args.indexOf(flag);
+          return idx !== -1 ? args[idx + 1] : undefined;
+        };
+
+        const res = engine.manageSiopPermission({
+          action,
+          environment,
+          cpf,
+          password: getArg('--senha'),
+          profile: getArg('--perfil'),
+          functionality: getArg('--func'),
+        });
+
+        console.log(res.output || res.error);
+        process.exit(res.success ? 0 : 1);
+      }
+
+      case 'siop-homolog': {
+        const sub = args[1];
+        if (sub === 'run') {
+          const scriptDir = args[2];
+          const headless = !args.includes('--no-headless');
+          if (!scriptDir) {
+            console.error('Uso: alm-engine siop-homolog run <scriptDir> [--no-headless]');
+            process.exit(2);
+          }
+          const res = engine.runSiopHomolog({ scriptDir, headless });
+          console.log(res.output || res.error);
+          process.exit(res.success ? 0 : 1);
+        } else if (sub === 'logs') {
+          const environment = args[2];
+          const descriptors = args[3];
+          const envPath = args[4];
+          const evidenceDir = args[5];
+          if (!environment || !descriptors || !envPath || !evidenceDir) {
+            console.error('Uso: alm-engine siop-homolog logs <ambiente> "<descritores>" <envPath> <pastaEvidencias>');
+            process.exit(2);
+          }
+          const res = engine.captureSiopK8sLogs({ environment, descriptors, envPath, evidenceDir });
+          console.log(res.output || res.error);
+          process.exit(res.success ? 0 : 1);
+        } else {
+          console.error('Subcomando desconhecido. Use "run" ou "logs".');
+          process.exit(2);
+        }
+      }
+
       default:
         console.error(`Comando desconhecido: ${command}. Use --help.`);
         process.exit(2);

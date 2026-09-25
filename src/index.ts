@@ -6,7 +6,10 @@ export * from './capabilities/tdd-gate.js';
 export * from './capabilities/provenance.js';
 export * from './capabilities/external-review.js';
 export * from './capabilities/promote-knowledge.js';
+export * from './capabilities/siop-permission.js';
+export * from './capabilities/siop-homolog.js';
 export * from './connectors/ccm.js';
 export * from './connectors/database.js';
 export * from './installer.js';
 export { AlmEngine } from './engine.js';
+

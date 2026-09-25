@@ -83,3 +83,57 @@ export interface PromoteKnowledgeResult {
   type: KnowledgeType;
   message: string;
 }
+
+export type SiopPermissionAction = 'god-mode' | 'reset-password' | 'grant-profile' | 'grant-functionality' | 'list-permissions';
+
+export interface SiopPermissionOptions {
+  action: SiopPermissionAction;
+  environment: string;
+  cpf: string;
+  password?: string;
+  profile?: string;
+  functionality?: string;
+  cliPath?: string;
+}
+
+export interface SiopPermissionResult {
+  success: boolean;
+  action: SiopPermissionAction;
+  environment: string;
+  cpf: string;
+  output: string;
+  error?: string;
+}
+
+export interface SiopHomologRunOptions {
+  scriptDir: string;
+  environment?: string;
+  headless?: boolean;
+  kitPath?: string;
+}
+
+export interface SiopHomologRunResult {
+  success: boolean;
+  scriptDir: string;
+  output: string;
+  evidenceDir?: string;
+  error?: string;
+}
+
+export interface SiopK8sLogsOptions {
+  environment: string;
+  descriptors: string;
+  envPath: string;
+  evidenceDir: string;
+  kitPath?: string;
+}
+
+export interface SiopK8sLogsResult {
+  success: boolean;
+  environment: string;
+  descriptors: string;
+  evidenceDir: string;
+  output: string;
+  error?: string;
+}
+

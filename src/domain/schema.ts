@@ -55,3 +55,35 @@ export const PromoteKnowledgeInputSchema = z.object({
 });
 
 export type PromoteKnowledgeInput = z.infer<typeof PromoteKnowledgeInputSchema>;
+
+export const SiopPermissionInputSchema = z.object({
+  action: z.enum(['god-mode', 'reset-password', 'grant-profile', 'grant-functionality', 'list-permissions']),
+  environment: z.string().min(1),
+  cpf: z.string().min(11),
+  password: z.string().optional(),
+  profile: z.string().optional(),
+  functionality: z.string().optional(),
+  cliPath: z.string().optional(),
+});
+
+export type SiopPermissionInput = z.infer<typeof SiopPermissionInputSchema>;
+
+export const SiopHomologRunInputSchema = z.object({
+  scriptDir: z.string().min(1),
+  environment: z.string().optional(),
+  headless: z.boolean().optional(),
+  kitPath: z.string().optional(),
+});
+
+export type SiopHomologRunInput = z.infer<typeof SiopHomologRunInputSchema>;
+
+export const SiopK8sLogsInputSchema = z.object({
+  environment: z.string().min(1),
+  descriptors: z.string().min(1),
+  envPath: z.string().min(1),
+  evidenceDir: z.string().min(1),
+  kitPath: z.string().optional(),
+});
+
+export type SiopK8sLogsInput = z.infer<typeof SiopK8sLogsInputSchema>;
+
