@@ -62,3 +62,24 @@ export interface SubagentHeartbeat {
   bloqueado_em?: string;
   ts: string;
 }
+
+export type KnowledgeType = 'causa-raiz' | 'regra-negocio' | 'armadilha-tecnica' | 'licao-aprendida';
+
+export interface PromoteKnowledgeOptions {
+  almId: string;
+  type: KnowledgeType;
+  title: string;
+  summary: string;
+  details?: string;
+  tags?: string[];
+  processPath?: string;
+  targetBrainDir?: string;
+}
+
+export interface PromoteKnowledgeResult {
+  success: boolean;
+  filePath: string;
+  relativeBrainPath: string;
+  type: KnowledgeType;
+  message: string;
+}

@@ -176,4 +176,40 @@ describe('ALM Engine Core Suite', () => {
     expect(toon).toContain('COD_ACAO|EXERCICIO|VL_DOTACAO');
     expect(toon).toContain('20TP|2026|1500000');
   });
+
+  it('deve promover conhecimento para o Segundo Cerebro e registrar marker no processo.md', () => {
+    const procPath = path.join(tmpDir, 'processo.md');
+    fs.writeFileSync(procPath, '# Chamado ALM #26153\n**Ambiente alvo:** siop02\n[FASE 1 CONCLUIDA]\n', 'utf-8');
+
+    const brainDir = path.join(tmpDir, 'second-brain');
+    const engine = new AlmEngine();
+
+    const result = engine.promoteKnowledge({
+      almId: '26153',
+      type: 'armadilha-tecnica',
+      title: 'Oracle Sequence Gap em Pod Restart',
+      summary: 'Ao reiniciar o pod em lote, a sequence perde o buffer de 20 IDs gerando buracos no historico.',
+      details: 'Para mitigar, configurar NOCACHE nas sequences criticas de auditoria.',
+      tags: ['oracle', 'sequence', 'database'],
+      processPath: procPath,
+      targetBrainDir: brainDir,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.type).toBe('armadilha-tecnica');
+    expect(fs.existsSync(result.filePath)).toBe(true);
+
+    // Verifica conteudo e frontmatter do arquivo no Segundo Cerebro
+    const fileContent = fs.readFileSync(result.filePath, 'utf-8');
+    expect(fileContent).toContain('title: "Oracle Sequence Gap em Pod Restart"');
+    expect(fileContent).toContain('type: armadilha-tecnica');
+    expect(fileContent).toContain('alm_source: "26153"');
+    expect(fileContent).toContain('Ao reiniciar o pod em lote');
+    expect(fileContent).toContain('configurar NOCACHE');
+
+    // Verifica injecao do marker no processo.md do chamado pessoal
+    const updatedProc = fs.readFileSync(procPath, 'utf-8');
+    expect(updatedProc).toContain('[CONHECIMENTO PROMOVIDO: Oracle Sequence Gap em Pod Restart ->');
+  });
 });
+

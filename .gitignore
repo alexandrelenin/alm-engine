@@ -3,3 +3,6 @@ dist/
 *.log
 .env
 .telemetria/
+chamados/
+second-brain/
+flight.jsonl

@@ -19,6 +19,7 @@ Uso:
   alm-engine provenance record <almId> <checklistPath> [flightLogPath]
   alm-engine provenance verify <almId> <checklistPath> [flightLogPath]
   alm-engine review <almId> <diffFilePath> [--rules <path>]
+  alm-engine promote <almId> --tipo <tipo> --titulo "<titulo>" --resumo "<resumo>" [--detalhes "<detalhes>"] [--tags "t1,t2"]
 `);
     process.exit(0);
   }
@@ -131,6 +132,45 @@ Uso:
 
         console.log(JSON.stringify(review, null, 2));
         process.exit(review.approved ? 0 : 1);
+      }
+
+      
+      case 'promote': {
+        const almId = args[1];
+        if (!almId) {
+          console.error('Uso: alm-engine promote <almId> --tipo <tipo> --titulo "<titulo>" --resumo "<resumo>"');
+          process.exit(2);
+        }
+
+        const getArg = (flag: string): string | undefined => {
+          const idx = args.indexOf(flag);
+          return idx !== -1 ? args[idx + 1] : undefined;
+        };
+
+        const tipo = (getArg('--tipo') || 'armadilha-tecnica') as any;
+        const titulo = getArg('--titulo');
+        const resumo = getArg('--resumo');
+        const detalhes = getArg('--detalhes');
+        const tagsRaw = getArg('--tags');
+        const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : undefined;
+
+        if (!titulo || !resumo) {
+          console.error('Erro: --titulo e --resumo sao obrigatorios para promover conhecimento.');
+          process.exit(2);
+        }
+
+        const res = engine.promoteKnowledge({
+          almId,
+          type: tipo,
+          title: titulo,
+          summary: resumo,
+          details: detalhes,
+          tags: tags,
+        });
+
+        console.log(`[PROMOTED] ${res.message}`);
+        console.log(`Caminho: ${res.filePath}`);
+        process.exit(0);
       }
 
       default:

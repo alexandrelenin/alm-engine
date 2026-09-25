@@ -81,6 +81,22 @@ export class AlmEngineMcpServer {
               }
             },
             {
+              name: 'alm_promote_knowledge',
+              description: 'Promotes a technical finding, bug root cause, or business rule from a personal ticket into the shared Second Brain.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  almId: { type: 'string', description: 'ALM Ticket Number' },
+                  type: { type: 'string', enum: ['causa-raiz', 'regra-negocio', 'armadilha-tecnica', 'licao-aprendida'], description: 'Knowledge Type' },
+                  title: { type: 'string', description: 'Concise Title' },
+                  summary: { type: 'string', description: 'Summary of the finding' },
+                  details: { type: 'string', description: 'Optional deeper technical explanation' },
+                  tags: { type: 'array', items: { type: 'string' }, description: 'Optional classification tags' }
+                },
+                required: ['almId', 'type', 'title', 'summary']
+              }
+            },
+            {
               name: 'alm_provenance_verify',
               description: 'Verifies cryptographic SHA-256 receipt of pre-deploy checklist against flight log.',
               inputSchema: {
@@ -119,6 +135,24 @@ export class AlmEngineMcpServer {
 
       if (toolName === 'alm_tdd_gate') {
         const result = await this.engine.checkTddGate(String(args.almId), args.processPath);
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+          }
+        };
+      }
+
+      if (toolName === 'alm_promote_knowledge') {
+        const result = this.engine.promoteKnowledge({
+          almId: String(args.almId),
+          type: args.type,
+          title: String(args.title),
+          summary: String(args.summary),
+          details: args.details ? String(args.details) : undefined,
+          tags: Array.isArray(args.tags) ? args.tags : undefined,
+        });
         return {
           jsonrpc: '2.0',
           id,

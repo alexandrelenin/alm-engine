@@ -3,6 +3,8 @@ import { PhaseGateCapability, PhaseGateOptions } from './capabilities/phase-gate
 import { TddGateCapability } from './capabilities/tdd-gate.js';
 import { ProvenanceCapability } from './capabilities/provenance.js';
 import { ExternalReviewCapability, ExternalReviewOptions } from './capabilities/external-review.js';
+import { KnowledgePromotionCapability } from './capabilities/promote-knowledge.js';
+import { PromoteKnowledgeOptions } from './domain/types.js';
 
 export class AlmEngine {
   public async checkPhaseGate(options: PhaseGateOptions): Promise<GateResult> {
@@ -28,5 +30,9 @@ export class AlmEngine {
 
   public async runExternalReview(options: ExternalReviewOptions) {
     return ExternalReviewCapability.executeClaudeReview(options);
+  }
+
+  public promoteKnowledge(options: PromoteKnowledgeOptions) {
+    return KnowledgePromotionCapability.promote(options);
   }
 }

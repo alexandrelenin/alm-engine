@@ -42,3 +42,16 @@ export const ExternalReviewInputSchema = z.object({
 });
 
 export type ExternalReviewInput = z.infer<typeof ExternalReviewInputSchema>;
+
+export const PromoteKnowledgeInputSchema = z.object({
+  almId: z.string().min(1),
+  type: z.enum(['causa-raiz', 'regra-negocio', 'armadilha-tecnica', 'licao-aprendida']),
+  title: z.string().min(3),
+  summary: z.string().min(5),
+  details: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  processPath: z.string().optional(),
+  targetBrainDir: z.string().optional(),
+});
+
+export type PromoteKnowledgeInput = z.infer<typeof PromoteKnowledgeInputSchema>;
