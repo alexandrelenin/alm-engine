@@ -10,6 +10,9 @@ export * from './capabilities/siop-permission.js';
 export * from './capabilities/siop-homolog.js';
 export * from './connectors/ccm.js';
 export * from './connectors/database.js';
+export * from './decisions/types.js';
+export * from './decisions/decision-manager.js';
 export * from './installer.js';
 export { AlmEngine } from './engine.js';
+
 

@@ -16,7 +16,19 @@ import {
   SiopK8sLogsResult,
 } from './domain/types.js';
 
+import { DecisionManager } from './decisions/decision-manager.js';
+import {
+  TicketSufficiencySchema,
+  TicketSufficiencyDecision,
+  KnowledgeRelevanceSchema,
+  KnowledgeRelevanceDecision,
+  TopicRoutingSchema,
+  TopicRoutingDecision,
+} from './decisions/types.js';
+
 export class AlmEngine {
+  private decisionManager: DecisionManager = new DecisionManager();
+
   public async checkPhaseGate(options: PhaseGateOptions): Promise<GateResult> {
     return PhaseGateCapability.evaluate(options);
   }
@@ -57,5 +69,22 @@ export class AlmEngine {
   public captureSiopK8sLogs(options: SiopK8sLogsOptions): SiopK8sLogsResult {
     return SiopHomologCapability.captureK8sLogs(options);
   }
+
+  public async decide<T>(prompt: string, schema: any, context?: Record<string, any>): Promise<T> {
+    return this.decisionManager.decide(prompt, schema, context);
+  }
+
+  public async evaluateTicketSufficiency(ticketDescription: string, context?: Record<string, any>): Promise<TicketSufficiencyDecision> {
+    return this.decisionManager.decide(ticketDescription, TicketSufficiencySchema, context);
+  }
+
+  public async evaluateKnowledgeRelevance(findingSummary: string, context?: Record<string, any>): Promise<KnowledgeRelevanceDecision> {
+    return this.decisionManager.decide(findingSummary, KnowledgeRelevanceSchema, context);
+  }
+
+  public async routeTopics(text: string, context?: Record<string, any>): Promise<TopicRoutingDecision> {
+    return this.decisionManager.decide(text, TopicRoutingSchema, context);
+  }
 }
+
 

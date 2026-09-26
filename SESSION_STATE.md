@@ -13,19 +13,23 @@
 * **Parceiro de Conhecimento (Second Brain)**: Repositorio `second-brain` com Invokta + Drizzle ORM/PostgreSQL.
 
 ## Estado Atual da Execucao
-* **Fase**: Marco 5 Concluido — Ensaio Ponta a Ponta com Chamado Piloto (#99001).
+* **Fase**: Marco 6 Concluido — Skill Canônica (alm-solver) & Camada de Decisao Plugavel (Invokta).
 * **Ultimas acoes**: 
-  - Ensaio completo realizado no chamado piloto #99001 (`chamados/99001/`):
-    - **Gate 0 -> 1**: Bloqueou com precisao quando o `Ambiente alvo` estava pendente; liberou com `siop02`.
-    - **Capability SIOP Permissao**: Validou regras de conexao com o banco Postgres de teste.
-    - **Gate 1 -> 2**: Exigiu artefato formal de investigacao `fase-1-resultado.md` com marcador `CAUSA RAIZ ENCONTRADA` (nivel Padrao).
-    - **TDD Gate (Fase 4)**: Bloqueou avanco para homologacao de chamado tipo `Bug` sem `[TESTE VERMELHO: ...]`.
-    - **Sensores Gate**: Bloqueou entrada na Fase 4 enquanto sensores declarados (`itens-servico`, `auth-servico`) nao possuiam `[SENSOR OK]`.
-    - **Segundo Cerebro**: Promocao com sucesso de achado critico (`Oracle Sequence Gap`) para `second-brain/armadilhas/oracle-sequence-gap-em-pod-restart.md` e injecao de carimbo de rastreabilidade no `processo.md`.
-    - **Fase 5 & Proveniencia SHA-256**: Recibo gravado no `flight.jsonl`. Testada e comprovada a deteccao de adulteracao indevida (`HASH_DIVERGE`) ao alterar o checklist.
-    - **Fase 6**: Deploy e encerramento aprovados com proveniencia criptografica intacta.
+  - Criacao e publicacao da **Skill Canonica `alm-solver`**:
+    - Criada em `skills/alm-solver/SKILL.md` (versionada no repositorio).
+    - Instalada globalmente no Antigravity em `C:\Users\alexl\.gemini\antigravity\skills\alm-solver\SKILL.md`.
+    - Contem os principios da Nova ALM (Invokta Standard), operacao das Fases 0 a 6, regras duras de TDD, economia de contexto com `token-saver` e integracao com o Segundo Cerebro.
+  - Implementacao da **Camada Plugavel de Micro-Decisoes (`DecisionProvider`)**:
+    - Contrato neutro com Zod em `src/decisions/types.ts`.
+    - `JevDecisionAdapter`: pronto para integracao com JEV em endpoints/CLI de zero tokens de saida.
+    - `StandardLlmDecisionAdapter`: suporte para structured outputs de LLMs convencionais.
+    - `HeuristicDecisionAdapter`: fallback deterministico offline local sem IA (0 tokens, instantaneo).
+    - `DecisionManager`: orquestrador com fallback gracioso e registro de provedores em runtime.
+  - Suite de testes Vitest ampliada para **21/21 testes passando com 100% de sucesso**.
 * **Proximo passo**: 
-  - Marco 6: Criar e refinar a Skill do Agente de Tratamento (`alm-solver` ou `nova-alm`), empacotando as orientacoes para o dev/agente sobre como orquestrar as fases, consumir o Segundo Cerebro e economizar tokens.
+  - Implementar o comando `alm-engine init <id>` para automacao de abertura de chamados.
+  - Executar ensaio com chamado real do SIOP.
 * **Bloqueios**: Nenhum.
+
 
 
